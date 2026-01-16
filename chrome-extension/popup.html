@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Illustraitor AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-robot"></i> Illustraitor AI</h1>
+            <p class="subtitle">Генерация и поиск изображений</p>
+        </div>
+        <!-- API Selection -->
+        <div class="section">
+            <h2><i class="fas fa-key"></i> Выберите источник:</h2>
+            <div class="api-selector">
+                <button id="api-openai" class="api-btn active" data-api="openai">
+                    <i class="fas fa-magic"></i> DALL-E 3 (генерация)
+                </button>
+                <button id="api-unsplash" class="api-btn" data-api="unsplash">
+                    <i class="fas fa-search"></i> Unsplash (поиск)
+                </button>
+            </div>
+        </div>
+        <!-- API Settings -->
+        <div class="section">
+            <h2><i class="fas fa-cog"></i> Настройки API</h2>
+            <!-- OpenAI Settings -->
+            <div class="api-settings" id="settings-openai">
+                <div class="input-group">
+                    <label for="openai-key"><i class="fab fa-openai"></i> OpenAI API Key:</label>
+                    <div class="input-with-btn">
+                        <input type="password" id="openai-key" placeholder="sk-...">
+                        <button class="toggle-password" data-target="openai-key">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <button id="save-openai" class="btn-save">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
+            </div>
+            <!-- Unsplash Settings -->
+            <div class="api-settings" id="settings-unsplash" style="display: none;">
+                <div class="input-group">
+                    <label for="unsplash-key"><i class="fas fa-camera"></i> Unsplash Access Key:</label>
+                    <div class="input-with-btn">
+                        <input type="password" id="unsplash-key" placeholder="Ваш Unsplash Access Key">
+                        <button class="toggle-password" data-target="unsplash-key">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <button id="save-unsplash" class="btn-save">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
+                <!-- Unsplash Options (только для Unsplash) -->
+                <div class="unsplash-options">
+                    <div class="option-row">
+                        <div class="option">
+                            <label for="unsplash-color"><i class="fas fa-palette"></i> Цвет:</label>
+                            <select id="unsplash-color">
+                                <option value="">Любой цвет</option>
+                                <option value="black_and_white">Черно-белый</option>
+                                <option value="black">Черный</option>
+                                <option value="white">Белый</option>
+                                <option value="yellow">Желтый</option>
+                                <option value="orange">Оранжевый</option>
+                                <option value="red">Красный</option>
+                                <option value="purple">Фиолетовый</option>
+                                <option value="magenta">Пурпурный</option>
+                                <option value="green">Зеленый</option>
+                                <option value="teal">Бирюзовый</option>
+                                <option value="blue">Синий</option>
+                            </select>
+                        </div>
+                        <div class="option">
+                            <label for="unsplash-orientation"><i class="fas fa-expand"></i> Ориентация:</label>
+                            <select id="unsplash-orientation">
+                                <option value="">Любая</option>
+                                <option value="landscape">Горизонтальная</option>
+                                <option value="portrait">Вертикальная</option>
+                                <option value="squarish">Квадратная</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Prompt and Style -->
+        <div class="section">
+            <h2><i class="fas fa-edit"></i> Описание изображения</h2>
+            <textarea id="prompt" placeholder="Опишите изображение, которое хотите создать или найти..." rows="3"></textarea>
+            <!-- Style (только для DALL-E) -->
+            <div class="style-section" id="style-section">
+                <label for="style"><i class="fas fa-palette"></i> Стиль (для DALL-E):</label>
+                <select id="style">
+                    <option value="">Без стиля</option>
+                    <option value="fantasy">Фантастика</option>
+                    <option value="realistic">Реализм</option>
+                    <option value="minimalist">Минимализм</option>
+                    <option value="abstract">Абстракция</option>
+                    <option value="digital-art">Цифровое искусство</option>
+                    <option value="photographic">Фотографический</option>
+                </select>
+            </div>
+        </div>
+        <!-- Generate Button -->
+        <div class="section">
+            <button id="generate-btn" class="btn-generate">
+                <i class="fas fa-bolt"></i> <span id="generate-text">Сгенерировать изображение</span>
+            </button>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+                <div id="status" class="status">Готов к работе</div>
+            </div>
+        </div>
+        <!-- Result -->
+        <div class="section result-section" id="result-section" style="display: none;">
+            <h2><i class="fas fa-image"></i> Результат</h2>
+            <div id="result-image" class="result-image"></div>
+            <div id="result-info" class="result-info"></div>
+            <div class="result-buttons">
+                <button id="download-btn" class="btn-download">
+                    <i class="fas fa-download"></i> Скачать
+                </button>
+                <button id="copy-btn" class="btn-copy">
+                    <i class="fas fa-copy"></i> Копировать URL
+                </button>
+                <button id="new-btn" class="btn-new">
+                    <i class="fas fa-plus"></i> Новое изображение
+                </button>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="footer">
+            <div class="connection-status">
+                <i class="fas fa-plug"></i> Бэкенд: 
+                <span id="backend-status" class="status-text">Проверка...</span>
+            </div>
+            <div class="api-info">
+                <span id="selected-api-text">Выбран: DALL-E 3</span>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    width: 450px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+.container {
+    background: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+.header h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+.header .subtitle {
+    color: #666;
+    font-size: 14px;
+}
+.section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+}
+.section h2 {
+    color: #444;
+    font-size: 16px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+/* API Selector */
+.api-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.api-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+}
+.api-btn.active {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+}
+.api-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+/* Input Groups */
+.input-group {
+    margin-bottom: 15px;
+}
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+}
+.input-with-btn {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.input-with-btn input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.toggle-password {
+    padding: 10px 15px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+}
+/* Unsplash Options */
+.unsplash-options {
+    margin-top: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+.option-row {
+    display: flex;
+    gap: 15px;
+}
+.option {
+    flex: 1;
+}
+.option label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 14px;
+}
+.option select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+/* Textarea */
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 14px;
+    margin-bottom: 15px;
+    min-height: 80px;
+}
+/* Style Section */
+.style-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.style-section label {
+    white-space: nowrap;
+    color: #555;
+    font-weight: 500;
+}
+.style-section select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+/* Buttons */
+.btn-save, .btn-generate, .btn-download, .btn-copy, .btn-new {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-save {
+    background: #4CAF50;
+    color: white;
+    width: 100%;
+}
+.btn-generate {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 16px;
+    width: 100%;
+    padding: 15px;
+}
+.btn-download {
+    background: #2196F3;
+    color: white;
+    flex: 1;
+}
+.btn-copy {
+    background: #FF9800;
+    color: white;
+    flex: 1;
+}
+.btn-new {
+    background: #9C27B0;
+    color: white;
+    flex: 1;
+}
+.btn-save:hover, .btn-generate:hover, .btn-download:hover, .btn-copy:hover, .btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+/* Progress Bar */
+.progress-container {
+    margin-top: 15px;
+}
+.progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 0.3s;
+}
+.status {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    min-height: 18px;
+}
+/* Result Section */
+.result-image {
+    width: 100%;
+    max-height: 250px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 2px solid #e0e0e0;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.result-image img {
+    max-width: 100%;
+    max-height: 250px;
+    display: block;
+}
+.result-info {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #555;
+    border: 1px solid #e0e0e0;
+}
+.result-info strong {
+    color: #333;
+}
+.result-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+/* Footer */
+.footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+    font-size: 12px;
+}
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+.api-info {
+    color: #777;
+    text-align: center;
+}
+.status-text {
+    font-weight: 600;
+}
+/* Loading Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.loading {
+    animation: spin 1s linear infinite;
+}
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+.notification.success {
+    background: #4CAF50;
+}
+.notification.error {
+    background: #f44336;
+}
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+/* Responsive */
+@media (max-width: 480px) {
+    body {
+        width: 380px;
+    }
+    .option-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
