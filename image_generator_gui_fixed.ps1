@@ -1,7 +1,7 @@
 ﻿Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 # ============================================
-# Illustraitor AI
+# ILLUSTRAITOR AI - ДВОЙНАЯ ГЕНЕРАЦИЯ
 # OpenAI DALL-E 3 + Unsplash поиск
 # Оба источника равноценны и независимы
 # ============================================
@@ -183,7 +183,7 @@ function Download-Image {
 function Create-GUI {
     # Основная форма
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "🎨 Illustraitor AI"
+    $form.Text = "🎨 Illustraitor AI - Двойная генерация"
     $form.Size = New-Object System.Drawing.Size(850, 750)
     $form.StartPosition = "CenterScreen"
     $form.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 46)
@@ -191,7 +191,7 @@ function Create-GUI {
     $form.MaximizeBox = $false
     # Заголовок
     $labelTitle = New-Object System.Windows.Forms.Label
-    $labelTitle.Text = "Illustraitor AI"
+    $labelTitle.Text = "Illustraitor AI - Двойная генерация"
     $labelTitle.ForeColor = [System.Drawing.Color]::FromArgb(94, 234, 212)
     $labelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
     $labelTitle.Location = New-Object System.Drawing.Point(20, 15)
@@ -314,6 +314,27 @@ function Create-GUI {
     $btnSaveUnsplash.FlatStyle = "Flat"
     $btnSaveUnsplash.Font = New-Object System.Drawing.Font("Segoe UI", 9)
     $panelUnsplashButtons.Controls.Add($btnSaveUnsplash)
+
+    # --- ОБРАБОТЧИК СОХРАНЕНИЯ UNSPLASH ---
+        $btnSaveUnsplash.Add_Click({
+        $key = $textUnsplash.Text.Trim()
+        if ($key) {
+            $savedConfig = Load-Config
+            $openAIKey = if ($savedConfig -and $savedConfig.OpenAIKey) { $savedConfig.OpenAIKey } else { "" }
+            Save-Config -OpenAIKey $openAIKey -UnsplashKey $key
+            $btnSaveUnsplash.Text = "✓ Сохранено"
+            $btnSaveUnsplash.BackColor = [System.Drawing.Color]::FromArgb(116, 199, 110)
+            Start-Sleep -Milliseconds 800
+            $btnSaveUnsplash.Text = "💾 Сохранить"
+            $btnSaveUnsplash.BackColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+            $statusLabel.Text = "Ключ Unsplash сохранен!"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+        } else {
+            $statusLabel.Text = "Ошибка: введите ключ Unsplash"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+        }
+    }
+
     $btnDeleteUnsplash = New-Object System.Windows.Forms.Button
     $btnDeleteUnsplash.Text = "🗑 Удалить"
     $btnDeleteUnsplash.Location = New-Object System.Drawing.Point(95, 0)
@@ -442,8 +463,7 @@ function Create-GUI {
     $statusLabel.TextAlign = "MiddleCenter"
     $statusLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
     $form.Controls.Add($statusLabel)
-    # --- ОБРАБОТЧИКИ СОБЫТИЙ ---
-    # Кнопки просмотра паролей
+    # --- ОБРАБОТЧИКИ СОБЫТИЙ ДЛЯ КНОПОК ПРОСМОТРА ---
     $script:openAIVisible = $false
     $btnShowOpenAI.Add_Click({
         $script:openAIVisible = -not $script:openAIVisible
@@ -470,7 +490,7 @@ function Create-GUI {
             $btnShowUnsplash.BackColor = [System.Drawing.Color]::FromArgb(89, 91, 110)
         }
     })
-    # Сохранение OpenAI ключа
+    # --- ОБРАБОТЧИКИ СОХРАНЕНИЯ/УДАЛЕНИЯ КЛЮЧЕЙ ---
     $btnSaveOpenAI.Add_Click({
         $key = $textOpenAI.Text.Trim()
         if ($key -and $key.StartsWith("sk-")) {
@@ -489,26 +509,337 @@ function Create-GUI {
             $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
         }
     })
-    # Сохранение Unsplash ключа
-    $btnSaveUnsplash.Add_Click({
-        $key = $textUnsplash.Text.Trim()
-        if ($key) {
+)
+    $btnDeleteOpenAI.Add_Click({
+        $result = [System.Windows.Forms.MessageBox]::Show(
+            "Удалить сохраненный ключ OpenAI?",
+            "Подтверждение удаления",
+            "YesNo",
+            "Question"
+        )
+        if ($result -eq "Yes") {
             $savedConfig = Load-Config
-            $openAIKey = if ($savedConfig -and $savedConfig.OpenAIKey) { $savedConfig.OpenAIKey } else { "" }
-            Save-Config -OpenAIKey $openAIKey -UnsplashKey $key
-            $btnSaveUnsplash.Text = "✓ Сохранено"
-            $btnSaveUnsplash.BackColor = [System.Drawing.Color]::FromArgb(116, 199, 110)
+            $unsplashKey = if ($savedConfig -and $savedConfig.UnsplashKey) { $savedConfig.UnsplashKey } else { "" }
+            Save-Config -OpenAIKey "" -UnsplashKey $unsplashKey
+            $textOpenAI.Text = ""
+            $btnDeleteOpenAI.Text = "✓ Удалено"
+            $btnDeleteOpenAI.BackColor = [System.Drawing.Color]::FromArgb(200, 100, 115)
             Start-Sleep -Milliseconds 800
-            $btnSaveUnsplash.Text = "💾 Сохранить"
-            $btnSaveUnsplash.BackColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
-            $statusLabel.Text = "Ключ Unsplash сохранен!"
-            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
-        } else {
-            $statusLabel.Text = "Ошибка: введите ключ Unsplash"
-            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            $btnDeleteOpenAI.Text = "🗑 Удалить"
+            $btnDeleteOpenAI.BackColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            $statusLabel.Text = "Ключ OpenAI удален"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(249, 226, 175)
         }
     })
-    # Остальные обработчики остаются без изменений...
+    $btnDeleteUnsplash.Add_Click({
+        $result = [System.Windows.Forms.MessageBox]::Show(
+            "Удалить сохраненный ключ Unsplash?",
+            "Подтверждение удаления",
+            "YesNo",
+            "Question"
+        )
+        if ($result -eq "Yes") {
+            $savedConfig = Load-Config
+            $openAIKey = if ($savedConfig -and $savedConfig.OpenAIKey) { $savedConfig.OpenAIKey } else { "" }
+            Save-Config -OpenAIKey $openAIKey -UnsplashKey ""
+            $textUnsplash.Text = ""
+            $btnDeleteUnsplash.Text = "✓ Удалено"
+            $btnDeleteUnsplash.BackColor = [System.Drawing.Color]::FromArgb(200, 100, 115)
+            Start-Sleep -Milliseconds 800
+            $btnDeleteUnsplash.Text = "🗑 Удалить"
+            $btnDeleteUnsplash.BackColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            $statusLabel.Text = "Ключ Unsplash удален"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(249, 226, 175)
+        }
+    })
+    # --- ОБРАБОТЧИКИ ПРОВЕРКИ КЛЮЧЕЙ ---
+    $btnTestOpenAI.Add_Click({
+        $key = $textOpenAI.Text.Trim()
+        if (-not $key) {
+            $statusLabel.Text = "Введите ключ OpenAI для проверки"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(249, 226, 175)
+            return
+        }
+        $btnTestOpenAI.Text = "⏳ Проверка..."
+        $btnTestOpenAI.BackColor = [System.Drawing.Color]::FromArgb(245, 194, 231)
+        $btnTestOpenAI.Enabled = $false
+        $statusLabel.Text = "Проверяем ключ OpenAI..."
+        $job = Start-Job -ScriptBlock {
+            param($key, $API_URL)
+            $body = @{ api_key = $key } | ConvertTo-Json
+            try {
+                $response = Invoke-RestMethod -Uri "$API_URL/validate/openai" `
+                    -Method Post -Body $body `
+                    -ContentType "application/json" `
+                    -TimeoutSec 10
+                return @{ valid = $response.valid; message = "Ключ OpenAI валиден!" }
+            }
+            catch {
+                return @{ valid = $false; message = "Ошибка OpenAI: $_" }
+            }
+        } -ArgumentList $key, $API_URL
+        while ($job.State -eq "Running") {
+            [System.Windows.Forms.Application]::DoEvents()
+            Start-Sleep -Milliseconds 100
+        }
+        $result = Receive-Job -Job $job
+        Remove-Job -Job $job
+        if ($result.valid) {
+            $btnTestOpenAI.Text = "✅ Валиден"
+            $btnTestOpenAI.BackColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+            $statusLabel.Text = $result.message
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+        } else {
+            $btnTestOpenAI.Text = "❌ Ошибка"
+            $btnTestOpenAI.BackColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            $statusLabel.Text = $result.message
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+        }
+        Start-Sleep -Seconds 2
+        $btnTestOpenAI.Text = "🔍 Проверить"
+        $btnTestOpenAI.BackColor = [System.Drawing.Color]::FromArgb(245, 194, 231)
+        $btnTestOpenAI.Enabled = $true
+    })
+    $btnTestUnsplash.Add_Click({
+        $key = $textUnsplash.Text.Trim()
+        if (-not $key) {
+            $statusLabel.Text = "Введите ключ Unsplash для проверки"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(249, 226, 175)
+            return
+        }
+        $btnTestUnsplash.Text = "⏳ Проверка..."
+        $btnTestUnsplash.BackColor = [System.Drawing.Color]::FromArgb(245, 194, 231)
+        $btnTestUnsplash.Enabled = $false
+        $statusLabel.Text = "Проверяем ключ Unsplash..."
+        $job = Start-Job -ScriptBlock {
+            param($key, $API_URL)
+            $body = @{ api_key = $key } | ConvertTo-Json
+            try {
+                $response = Invoke-RestMethod -Uri "$API_URL/validate/unsplash" `
+                    -Method Post -Body $body `
+                    -ContentType "application/json" `
+                    -TimeoutSec 10
+                return @{ valid = $response.valid; message = "Ключ Unsplash валиден!" }
+            }
+            catch {
+                return @{ valid = $false; message = "Ошибка Unsplash: $_" }
+            }
+        } -ArgumentList $key, $API_URL
+        while ($job.State -eq "Running") {
+            [System.Windows.Forms.Application]::DoEvents()
+            Start-Sleep -Milliseconds 100
+        }
+        $result = Receive-Job -Job $job
+        Remove-Job -Job $job
+        if ($result.valid) {
+            $btnTestUnsplash.Text = "✅ Валиден"
+            $btnTestUnsplash.BackColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+            $statusLabel.Text = $result.message
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+        } else {
+            $btnTestUnsplash.Text = "❌ Ошибка"
+            $btnTestUnsplash.BackColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            $statusLabel.Text = $result.message
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+        }
+        Start-Sleep -Seconds 2
+        $btnTestUnsplash.Text = "🔍 Проверить"
+        $btnTestUnsplash.BackColor = [System.Drawing.Color]::FromArgb(245, 194, 231)
+        $btnTestUnsplash.Enabled = $true
+    })
+    # --- ОБРАБОТЧИКИ ГЕНЕРАЦИИ/ПОИСКА ---
+    $btnGenerateDALLE.Add_Click({
+        # Проверки для DALL-E
+        if ($textOpenAI.Text.Trim() -eq "") {
+            $statusLabel.Text = "Ошибка: для генерации нужен ключ OpenAI"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            return
+        }
+        if ($textPrompt.Text.Trim() -eq "") {
+            $statusLabel.Text = "Ошибка: введите промпт для генерации"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            return
+        }
+        # Получаем выбранные стили
+        $selectedStyles = @()
+        for ($i = 0; $i -lt $listStyles.Items.Count; $i++) {
+            if ($listStyles.GetItemChecked($i)) {
+                $styleText = $listStyles.Items[$i] -replace "^[^\s]+\s+", ""
+                $selectedStyles += $styleText
+            }
+        }
+        if ($selectedStyles.Count -eq 0) {
+            $selectedStyles = @("Реализм")
+        }
+        # Блокируем кнопки
+        $btnGenerateDALLE.Enabled = $false
+        $btnSearchUnsplash.Enabled = $false
+        $btnGenerateDALLE.Text = "⏳ Генерация DALL-E..."
+        $btnGenerateDALLE.BackColor = [System.Drawing.Color]::FromArgb(200, 100, 140)
+        $statusLabel.Text = "Генерация изображения через DALL-E 3..."
+        $script:currentSource = "dalle"
+        # Асинхронная генерация через DALL-E
+        $job = Start-Job -ScriptBlock {
+            param($prompt, $apiKey, $styles, $size, $API_URL)
+            # Импортируем функцию
+            . $using:function:Generate-DALLE
+            $result = Generate-DALLE -prompt $prompt -apiKey $apiKey -styles $styles -size $size
+            return $result
+        } -ArgumentList $textPrompt.Text.Trim(), $textOpenAI.Text.Trim(), $selectedStyles, "1024x1024", $API_URL
+        # Мониторим прогресс
+        $timer = New-Object System.Windows.Forms.Timer
+        $timer.Interval = 100
+        $timer.Add_Tick({
+            if ($job.State -eq "Completed") {
+                $timer.Stop()
+                $timer.Dispose()
+                $result = Receive-Job -Job $job
+                Remove-Job -Job $job
+                if ($result.success) {
+                    $script:generatedImageUrl = $result.image_url
+                    $btnDownload.Enabled = $true
+                    $btnGenerateDALLE.Text = "✅ Готово!"
+                    $statusLabel.Text = $result.message
+                    $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+                    # Возвращаем обычный вид через 2 секунды
+                    Start-Sleep -Seconds 2
+                    $btnGenerateDALLE.Text = "🎨 ГЕНЕРИРОВАТЬ (DALL-E 3)"
+                    $btnGenerateDALLE.BackColor = [System.Drawing.Color]::FromArgb(243, 139, 168)
+                } else {
+                    $btnGenerateDALLE.Text = "❌ Ошибка"
+                    $statusLabel.Text = "Ошибка DALL-E: $($result.error)"
+                    $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+                    Start-Sleep -Seconds 2
+                    $btnGenerateDALLE.Text = "🎨 ГЕНЕРИРОВАТЬ (DALL-E 3)"
+                    $btnGenerateDALLE.BackColor = [System.Drawing.Color]::FromArgb(243, 139, 168)
+                }
+                $btnGenerateDALLE.Enabled = $true
+                $btnSearchUnsplash.Enabled = $true
+            }
+            elseif ($job.State -eq "Failed") {
+                $timer.Stop()
+                $timer.Dispose()
+                $btnGenerateDALLE.Text = "❌ Ошибка"
+                $statusLabel.Text = "Ошибка при выполнении задачи DALL-E"
+                $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+                Start-Sleep -Seconds 2
+                $btnGenerateDALLE.Text = "🎨 ГЕНЕРИРОВАТЬ (DALL-E 3)"
+                $btnGenerateDALLE.BackColor = [System.Drawing.Color]::FromArgb(243, 139, 168)
+                $btnGenerateDALLE.Enabled = $true
+                $btnSearchUnsplash.Enabled = $true
+            }
+        })
+        $timer.Start()
+    })
+    $btnSearchUnsplash.Add_Click({
+        # Проверки для Unsplash
+        if ($textUnsplash.Text.Trim() -eq "") {
+            $statusLabel.Text = "Ошибка: для поиска нужен ключ Unsplash"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            return
+        }
+        if ($textPrompt.Text.Trim() -eq "") {
+            $statusLabel.Text = "Ошибка: введите запрос для поиска"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            return
+        }
+        # Блокируем кнопки
+        $btnSearchUnsplash.Enabled = $false
+        $btnGenerateDALLE.Enabled = $false
+        $btnSearchUnsplash.Text = "⏳ Поиск Unsplash..."
+        $btnSearchUnsplash.BackColor = [System.Drawing.Color]::FromArgb(170, 140, 220)
+        $statusLabel.Text = "Поиск изображений в библиотеке Unsplash..."
+        $script:currentSource = "unsplash"
+        # Асинхронный поиск через Unsplash
+        $job = Start-Job -ScriptBlock {
+            param($query, $apiKey, $API_URL)
+            # Импортируем функцию
+            . $using:function:Search-Unsplash
+            $result = Search-Unsplash -query $query -apiKey $apiKey
+            return $result
+        } -ArgumentList $textPrompt.Text.Trim(), $textUnsplash.Text.Trim(), $API_URL
+        # Мониторим прогресс
+        $timer = New-Object System.Windows.Forms.Timer
+        $timer.Interval = 100
+        $timer.Add_Tick({
+            if ($job.State -eq "Completed") {
+                $timer.Stop()
+                $timer.Dispose()
+                $result = Receive-Job -Job $job
+                Remove-Job -Job $job
+                if ($result.success) {
+                    $script:generatedImageUrl = $result.image_url
+                    $btnDownload.Enabled = $true
+                    $btnSearchUnsplash.Text = "✅ Найдено!"
+                    $statusLabel.Text = $result.message
+                    $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+                    # Возвращаем обычный вид через 2 секунды
+                    Start-Sleep -Seconds 2
+                    $btnSearchUnsplash.Text = "🔎 ПОИСК (Unsplash)"
+                    $btnSearchUnsplash.BackColor = [System.Drawing.Color]::FromArgb(203, 166, 247)
+                } else {
+                    $btnSearchUnsplash.Text = "❌ Ошибка"
+                    $statusLabel.Text = "Ошибка Unsplash: $($result.error)"
+                    $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+                    Start-Sleep -Seconds 2
+                    $btnSearchUnsplash.Text = "🔎 ПОИСК (Unsplash)"
+                    $btnSearchUnsplash.BackColor = [System.Drawing.Color]::FromArgb(203, 166, 247)
+                }
+                $btnSearchUnsplash.Enabled = $true
+                $btnGenerateDALLE.Enabled = $true
+            }
+            elseif ($job.State -eq "Failed") {
+                $timer.Stop()
+                $timer.Dispose()
+                $btnSearchUnsplash.Text = "❌ Ошибка"
+                $statusLabel.Text = "Ошибка при выполнении поиска Unsplash"
+                $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+                Start-Sleep -Seconds 2
+                $btnSearchUnsplash.Text = "🔎 ПОИСК (Unsplash)"
+                $btnSearchUnsplash.BackColor = [System.Drawing.Color]::FromArgb(203, 166, 247)
+                $btnSearchUnsplash.Enabled = $true
+                $btnGenerateDALLE.Enabled = $true
+            }
+        })
+        $timer.Start()
+    })
+    # --- ОБРАБОТЧИК СКАЧИВАНИЯ ---
+    $btnDownload.Add_Click({
+        if (-not $script:generatedImageUrl) {
+            $statusLabel.Text = "Ошибка: нет сгенерированного/найденного изображения"
+            $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+            return
+        }
+        $sourceText = if ($script:currentSource -eq "dalle") { "DALL-E" } else { "Unsplash" }
+        $saveDialog = New-Object System.Windows.Forms.SaveFileDialog
+        $saveDialog.Filter = "PNG изображения (*.png)|*.png|JPEG изображения (*.jpg)|*.jpg"
+        $saveDialog.FileName = "illustraitor_${sourceText}_$(Get-Date -Format 'yyyyMMdd_HHmmss').png"
+        $saveDialog.InitialDirectory = [Environment]::GetFolderPath('Pictures')
+        $saveDialog.OverwritePrompt = $true
+        if ($saveDialog.ShowDialog() -eq "OK") {
+            $btnDownload.Enabled = $false
+            $btnDownload.Text = "⏳ Скачивание..."
+            $statusLabel.Text = "Скачиваем изображение с $sourceText..."
+            $downloadResult = Download-Image -url $script:generatedImageUrl -savePath $saveDialog.FileName
+            if ($downloadResult) {
+                $btnDownload.Text = "✅ Скачано!"
+                $statusLabel.Text = "Изображение от $sourceText сохранено: $($saveDialog.FileName)"
+                $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(166, 227, 161)
+                Start-Sleep -Seconds 2
+                $btnDownload.Text = "💾 СКАЧАТЬ ИЗОБРАЖЕНИЕ"
+                $btnDownload.BackColor = [System.Drawing.Color]::FromArgb(137, 180, 250)
+                $btnDownload.Enabled = $true
+            } else {
+                $btnDownload.Text = "❌ Ошибка"
+                $statusLabel.Text = "Ошибка при скачивании с $sourceText"
+                $statusLabel.ForeColor = [System.Drawing.Color]::FromArgb(237, 135, 150)
+                Start-Sleep -Seconds 2
+                $btnDownload.Text = "💾 СКАЧАТЬ ИЗОБРАЖЕНИЕ"
+                $btnDownload.BackColor = [System.Drawing.Color]::FromArgb(137, 180, 250)
+                $btnDownload.Enabled = $true
+            }
+        }
+    })
     # Загрузка сохраненных ключей при старте
     $savedConfig = Load-Config
     if ($savedConfig) {
