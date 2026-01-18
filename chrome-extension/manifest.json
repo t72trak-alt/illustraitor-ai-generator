@@ -1,15 +1,19 @@
 ﻿{
   "manifest_version": 3,
   "name": "Illustraitor AI",
-  "version": "2.0.0",
-  "description": "Генератор изображений",
-  "permissions": ["storage"],
+  "version": "3.0.0",
+  "description": "Генерация изображений через DALL-E 3 и поиск в Unsplash",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_title": "🎨 Illustraitor AI",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
+  "permissions": ["storage"],
   "host_permissions": [
-    "http://localhost:8000/*",
-    "https://api.openai.com/*",
-    "https://api.unsplash.com/*"
+    "https://illustraitor-ai-generator.onrender.com/*"
   ]
 }

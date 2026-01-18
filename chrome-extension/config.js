@@ -1,47 +1,33 @@
-﻿// Config for Illustraitor AI Extension
+﻿// Конфигурация API
 const CONFIG = {
-    // API URL - ваш сервер на Render
-    API_URL: 'https://illustraitor-ai-generator.onrender.com',
-    // Endpoints
+    API_BASE_URL: 'https://illustraitor-ai-generator.onrender.com',
     ENDPOINTS: {
         GENERATE: '/generate',
         HEALTH: '/health',
         VALIDATE_OPENAI: '/validate/openai',
         VALIDATE_UNSPLASH: '/validate/unsplash'
     },
-    // Timeout in milliseconds
-    TIMEOUT: 45000,
-    // Default styles for DALL-E
-    DEFAULT_STYLES: [
-        { id: 'fantasy', name: 'Фантастика' },
-        { id: 'realistic', name: 'Реализм' },
-        { id: 'minimalist', name: 'Минимализм' },
-        { id: 'abstract', name: 'Абстракция' },
-        { id: 'digital-art', name: 'Цифровое искусство' },
-        { id: 'photographic', name: 'Фотографический' }
+    STYLES: [
+        { id: 1, name: '🔮 Реализм' },
+        { id: 2, name: '🎨 Импрессионизм' },
+        { id: 3, name: '🌌 Сюрреализм' },
+        { id: 4, name: '🌀 Абстракционизм' },
+        { id: 5, name: '🟡 Поп-арт' },
+        { id: 6, name: '🤖 Киберпанк' },
+        { id: 7, name: '⚙️ Стимпанк' },
+        { id: 8, name: '🐉 Фэнтези' },
+        { id: 9, name: '🌸 Аниме' },
+        { id: 10, name: '🎮 Пиксель-арт' },
+        { id: 11, name: '🖌️ Масляная живопись' },
+        { id: 12, name: '💧 Акварель' },
+        { id: 13, name: '⚫ Черно-белое' },
+        { id: 14, name: '📜 Винтаж' },
+        { id: 15, name: '📺 Мультяшный' }
     ],
-    // Unsplash options
-    UNSPLASH_OPTIONS: {
-        COLORS: [
-            { id: null, name: 'Любой цвет' },
-            { id: 'black_and_white', name: 'Черно-белый' },
-            { id: 'black', name: 'Черный' },
-            { id: 'white', name: 'Белый' },
-            { id: 'yellow', name: 'Желтый' },
-            { id: 'orange', name: 'Оранжевый' },
-            { id: 'red', name: 'Красный' },
-            { id: 'purple', name: 'Фиолетовый' },
-            { id: 'magenta', name: 'Пурпурный' },
-            { id: 'green', name: 'Зеленый' },
-            { id: 'teal', name: 'Бирюзовый' },
-            { id: 'blue', name: 'Синий' }
-        ],
-        ORIENTATIONS: [
-            { id: null, name: 'Любая ориентация' },
-            { id: 'landscape', name: 'Горизонтальная' },
-            { id: 'portrait', name: 'Вертикальная' },
-            { id: 'squarish', name: 'Квадратная' }
-        ]
+    // Ключи хранения в chrome.storage
+    STORAGE_KEYS: {
+        OPENAI_KEY: 'openai_key',
+        UNSPLASH_KEY: 'unsplash_key',
+        LAST_UPDATED: 'last_updated'
     }
 };
-export default CONFIG;
