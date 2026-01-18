@@ -1,7 +1,7 @@
 ﻿// Config for Illustraitor AI Extension
 const CONFIG = {
-    // API URL (измените на ваш после деплоя)
-    API_URL: 'http://localhost:8000', // Локальный для тестов
+    // API URL - ваш сервер на Render
+    API_URL: 'https://illustraitor-ai-generator.onrender.com',
     // Endpoints
     ENDPOINTS: {
         GENERATE: '/generate',
