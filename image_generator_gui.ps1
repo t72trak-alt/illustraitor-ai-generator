@@ -1,16 +1,13 @@
 ﻿Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 # ============================================
-# ILLUSTRAITOR AI - ФИНАЛЬНАЯ ВЕРСИЯ
-# Двойная генерация: DALL-E 3 + Unsplash
+# ILLUSTRAITOR AI - ПОЛНАЯ ВЕРСИЯ С API
 # ============================================
-# --- КОНСТАНТЫ ---
 $API_URL = "https://illustraitor-ai-generator.onrender.com"
 $CONFIG_PATH = "$env:APPDATA\AI_Image_Generator\config.json"
 $global:generatedImageUrl = $null
 $global:currentSource = $null
 $global:statusLabel = $null
-# --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 function Save-Config {
     param([string]$OpenAIKey, [string]$UnsplashKey)
     $configDir = Split-Path $CONFIG_PATH -Parent
@@ -49,9 +46,7 @@ function Show-Message {
     }
     $colorName = if ($Type -eq "Error") { "Red" } else { "Cyan" }
     Write-Host "${Type}: $Message" -ForegroundColor $colorName
-}
-# --- СОЗДАНИЕ ИНТЕРФЕЙСА ---
-function Create-GUI {
+}function Create-GUI {
     # Основная форма
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "🎨 Illustraitor AI - Двойная генерация"
@@ -384,17 +379,11 @@ function Create-GUI {
     }
     return $form
 }
-# --- ЗАПУСК ПРИЛОЖЕНИЯ ---
-try {
-    Write-Host "=" * 60 -ForegroundColor Cyan
-    Write-Host "ILLUSTRAITOR AI - ФИНАЛЬНАЯ ВЕРСИЯ" -ForegroundColor Yellow
-    Write-Host "API сервер: $API_URL" -ForegroundColor Green
-    Write-Host "=" * 60 -ForegroundColor Cyan
-    $form = Create-GUI
-    $form.Text = "🎨 Illustraitor AI - DALL-E 3 + Unsplash"
-    [System.Windows.Forms.Application]::EnableVisualStyles()
-    [void]$form.ShowDialog()
-}
-catch {
-    Write-Host "Ошибка: $_" -ForegroundColor Red
-}
+# --- ЗАПУСК ---
+Write-Host "=" * 60 -ForegroundColor Cyan
+Write-Host "🎨 ILLUSTRAITOR AI - РЕАЛЬНЫЕ API" -ForegroundColor Yellow
+Write-Host "=" * 60 -ForegroundColor Cyan
+$form = Create-GUI
+[System.Windows.Forms.Application]::EnableVisualStyles()
+$form.ShowDialog()
+
