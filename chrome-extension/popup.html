@@ -4,8 +4,247 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎨 Illustraitor AI</title>
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    /* Catppuccin Latte - ВСТРОЕННЫЕ СТИЛИ */
+    :root {
+        --rosewater: #dc8a78;
+        --flamingo: #dd7878;
+        --pink: #ea76cb;
+        --mauve: #8839ef;
+        --red: #d20f39;
+        --maroon: #e64553;
+        --peach: #fe640b;
+        --yellow: #df8e1d;
+        --green: #40a02b;
+        --teal: #179299;
+        --sky: #04a5e5;
+        --sapphire: #209fb5;
+        --blue: #1e66f5;
+        --lavender: #7287fd;
+        --text: #4c4f69;
+        --subtext1: #5c5f77;
+        --subtext0: #6c6f85;
+        --overlay2: #7c7f93;
+        --overlay1: #8c8fa1;
+        --overlay0: #9ca0b0;
+        --surface2: #acb0be;
+        --surface1: #bcc0cc;
+        --surface0: #ccd0da;
+        --base: #eff1f5;
+        --mantle: #e6e9ef;
+        --crust: #dce0e8;
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+        background: var(--base);
+        color: var(--text);
+        width: 450px;
+        min-height: 600px;
+        padding: 20px;
+        border: 1px solid var(--surface1);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    header {
+        text-align: center;
+        margin-bottom: 10px;
+        border-bottom: 2px solid var(--mauve);
+        padding-bottom: 15px;
+    }
+    h1 {
+        color: var(--mauve);
+        font-size: 26px;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .subtitle {
+        color: var(--subtext1);
+        font-size: 14px;
+    }
+    .panel {
+        background: var(--surface0);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid var(--surface1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h2 {
+        color: var(--blue);
+        margin-bottom: 15px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .input-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        color: var(--text);
+        margin-bottom: 6px;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    input[type="text"], input[type="password"], select, textarea {
+        width: 100%;
+        padding: 12px 14px;
+        background: var(--base);
+        border: 2px solid var(--surface1);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(30, 102, 245, 0.2);
+    }
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex: 1;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue), var(--lavender));
+        color: white;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 102, 245, 0.3);
+    }
+    .btn-secondary {
+        background: var(--surface1);
+        color: var(--text);
+    }
+    .btn-secondary:hover {
+        background: var(--surface2);
+    }
+    .btn-success {
+        background: linear-gradient(135deg, var(--green), var(--teal));
+        color: white;
+    }
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 160, 43, 0.3);
+    }
+    .btn-danger {
+        background: linear-gradient(135deg, var(--red), var(--maroon));
+        color: white;
+    }
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(210, 15, 57, 0.3);
+    }
+    .status {
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-size: 14px;
+        display: none;
+    }
+    .status.success {
+        background: rgba(64, 160, 43, 0.1);
+        border: 1px solid rgba(64, 160, 43, 0.3);
+        color: var(--green);
+        display: block;
+    }
+    .status.error {
+        background: rgba(210, 15, 57, 0.1);
+        border: 1px solid rgba(210, 15, 57, 0.3);
+        color: var(--red);
+        display: block;
+    }
+    .status.info {
+        background: rgba(30, 102, 245, 0.1);
+        border: 1px solid rgba(30, 102, 245, 0.3);
+        color: var(--blue);
+        display: block;
+    }
+    .result-container {
+        margin-top: 20px;
+        text-align: center;
+    }
+    #result-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 12px;
+        border: 2px solid var(--surface1);
+        margin-bottom: 15px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    #global-download-btn {
+        background: linear-gradient(135deg, var(--mauve), var(--pink));
+        color: white;
+        margin-top: 10px;
+        width: 100%;
+    }
+    #global-download-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(136, 57, 239, 0.3);
+    }
+    #global-download-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid var(--surface1);
+        color: var(--subtext1);
+        font-size: 12px;
+    }
+    /* Иконки и декорации */
+    .icon {
+        font-size: 16px;
+    }
+    .badge {
+        background: var(--surface1);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        color: var(--subtext1);
+    }
+    .color-preview {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: middle;
+        border: 2px solid var(--surface0);
+    }
+</style>
 </head>
 <body>
     <div class="container">
@@ -32,18 +271,36 @@
             <div class="input-group">
                 <label for="openai-style">Стиль:</label>
                 <select id="openai-style">
-                    <!-- Стили будут заполнены через JS -->
+                    <option value="realistic">🔮 Реализм</option>
+                    <option value="impressionism">🎨 Импрессионизм</option>
+                    <option value="surrealism">🌌 Сюрреализм</option>
+                    <option value="abstract">🌀 Абстракционизм</option>
+                    <option value="pop-art">🟡 Поп-арт</option>
+                    <option value="cyberpunk">🤖 Киберпанк</option>
+                    <option value="steampunk">⚙️ Стимпанк</option>
+                    <option value="fantasy">🐉 Фэнтези</option>
+                    <option value="anime">🌸 Аниме</option>
+                    <option value="pixel-art">🎮 Пиксель-арт</option>
+                    <option value="oil-painting">🖌️ Масляная живопись</option>
+                    <option value="watercolor">💧 Акварель</option>
+                    <option value="black-white">⚫ Черно-белое</option>
+                    <option value="vintage">📜 Винтаж</option>
+                    <option value="cartoon">📺 Мультяшный</option>
                 </select>
             </div>
-            <button id="generate-openai" class="btn btn-generate"><i class="fas fa-magic"></i> Сгенерировать</button>
-            <div class="status" id="status-openai"></div>
+            <button id="generate-openai" class="btn btn-generate" style="width:100%;">
+                <i class="fas fa-magic"></i> Сгенерировать
+            </button>
+            <div id="status-openai" class="status">
+                Готов к генерации...
+            </div>
         </section>
         <!-- Секция Unsplash -->
         <section class="panel unsplash-panel">
             <h2><i class="fas fa-camera"></i> Unsplash API</h2>
             <div class="input-group">
                 <label for="unsplash-key">API ключ:</label>
-                <input type="password" id="unsplash-key" placeholder="Ваш Unsplash Access Key">
+                <input type="password" id="unsplash-key" placeholder="Ваш Unsplash ключ">
                 <div class="button-group">
                     <button id="save-unsplash" class="btn btn-save"><i class="fas fa-save"></i> Сохранить</button>
                     <button id="delete-unsplash" class="btn btn-delete"><i class="fas fa-trash"></i> Удалить</button>
@@ -52,43 +309,47 @@
             </div>
             <div class="input-group">
                 <label for="unsplash-query">Поисковый запрос:</label>
-                <input type="text" id="unsplash-query" placeholder="Например: sunset mountains">
+                <input type="text" id="unsplash-query" placeholder="Например: природа, горы">
             </div>
             <div class="input-group">
                 <label for="unsplash-color">Цветовой фильтр:</label>
                 <select id="unsplash-color">
                     <option value="">Любой цвет</option>
-                    <option value="black_and_white">Чёрно-белый</option>
-                    <option value="black">Чёрный</option>
+                    <option value="black_and_white">Черно-белый</option>
+                    <option value="black">Черный</option>
                     <option value="white">Белый</option>
-                    <option value="yellow">Жёлтый</option>
+                    <option value="yellow">Желтый</option>
                     <option value="orange">Оранжевый</option>
                     <option value="red">Красный</option>
                     <option value="purple">Фиолетовый</option>
                     <option value="magenta">Пурпурный</option>
-                    <option value="green">Зелёный</option>
+                    <option value="green">Зеленый</option>
                     <option value="teal">Бирюзовый</option>
                     <option value="blue">Синий</option>
                 </select>
             </div>
-            <button id="search-unsplash" class="btn btn-generate"><i class="fas fa-search"></i> Найти фото</button>
-            <div class="status" id="status-unsplash"></div>
+            <button id="search-unsplash" class="btn btn-generate" style="width:100%;">
+                <i class="fas fa-search"></i> Найти фото
+            </button>
+            <div id="status-unsplash" class="status">
+                Готов к поиску...
+            </div>
         </section>
-        <!-- Общий статус -->
+        <!-- Результаты -->
+        <div id="result-container" class="result-container">
+            <!-- Результаты будут здесь -->
+        </div>
         <footer>
-            <div class="status-bar" id="global-status">
-                <i class="fas fa-info-circle"></i> Готов к работе.
+            <div id="global-status" class="status">
+                ⏳ Загрузка...
             </div>
-            <div class="result-container hidden" id="result-container">
-                <img id="result-image" src="" alt="Результат">
-                <div class="result-actions">
-                    <button id="download-btn" class="btn btn-download"><i class="fas fa-download"></i> Скачать</button>
-                    <button id="close-result" class="btn btn-delete"><i class="fas fa-times"></i> Закрыть</button>
-                </div>
-            </div>
-        </footer>
+                <button id="global-download-btn" disabled style="background:#6c7086; color:#cdd6f4; border:none; padding:12px 24px; border-radius:8px; cursor:not-allowed; font-weight:bold; width:100%; margin-top:15px; font-size:14px; opacity:0.7;">
+            <i class="fas fa-download"></i> Скачать
+        </button>
+    </footer>
     </div>
-    <script src="config.js"></script>
     <script src="popup.js"></script>
 </body>
 </html>
+
+
