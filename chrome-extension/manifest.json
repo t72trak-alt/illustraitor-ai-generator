@@ -1,4 +1,4 @@
-﻿{
+{
   "manifest_version": 3,
   "name": "Illustraitor AI",
   "version": "3.0.0",
@@ -14,6 +14,7 @@
   },
   "permissions": ["storage"],
   "host_permissions": [
-    "https://illustraitor-ai-generator.onrender.com/*"
+    "https://illustraitor-ai-generator.onrender.com/*",
+    "https://api.openai.com/*"
   ]
 }
