@@ -1,20 +1,19 @@
-{
-  "manifest_version": 3,
-  "name": "Illustraitor AI",
-  "version": "3.0.0",
-  "description": "Генерация изображений через DALL-E 3 и поиск в Unsplash",
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "🎨 Illustraitor AI",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+// MINIMAL WORKING CODE
+console.log("EXTENSION: Script loaded");
+
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM ready");
+    
+    const generateBtn = document.getElementById("generate-btn");
+    const statusDiv = document.getElementById("status");
+    
+    if (!generateBtn) {
+        console.error("Generate button not found");
+        return;
     }
-  },
-  "permissions": ["storage"],
-  "host_permissions": [
-    "https://illustraitor-ai-generator.onrender.com/*",
-    "https://api.openai.com/*"
-  ]
-}
+    
+    generateBtn.addEventListener("click", function() {
+        console.log("Generate clicked");
+        alert("Button works!");
+    });
+});
