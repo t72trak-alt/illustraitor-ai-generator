@@ -1,0 +1,8 @@
+﻿# Попробуйте выполнить в командной строке (не PowerShell):
+curl -X POST "https://illustraitor-ai-generator.onrender.com/validate/openai" ^
+     -H "Content-Type: application/json" ^
+     -d "{\"api_key\":\"sk-test123\"}"
+# Или попробуйте с другим полем:
+curl -X POST "https://illustraitor-ai-generator.onrender.com/validate/openai" ^
+     -H "Content-Type: application/json" ^
+     -d "{\"key\":\"sk-test123\"}"

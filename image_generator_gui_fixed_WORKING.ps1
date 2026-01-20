@@ -1,13 +1,16 @@
 ﻿Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 # ============================================
-# ILLUSTRAITOR AI - ПОЛНАЯ ВЕРСИЯ С API
+# ILLUSTRAITOR AI - ФИНАЛЬНАЯ ВЕРСИЯ
+# Двойная генерация: DALL-E 3 + Unsplash
 # ============================================
+# --- КОНСТАНТЫ ---
 $API_URL = "https://illustraitor-ai-generator.onrender.com"
 $CONFIG_PATH = "$env:APPDATA\AI_Image_Generator\config.json"
 $global:generatedImageUrl = $null
 $global:currentSource = $null
 $global:statusLabel = $null
+# --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 function Save-Config {
     param([string]$OpenAIKey, [string]$UnsplashKey)
     $configDir = Split-Path $CONFIG_PATH -Parent
@@ -46,7 +49,9 @@ function Show-Message {
     }
     $colorName = if ($Type -eq "Error") { "Red" } else { "Cyan" }
     Write-Host "${Type}: $Message" -ForegroundColor $colorName
-}function Create-GUI {
+}
+# --- СОЗДАНИЕ ИНТЕРФЕЙСА ---
+function Create-GUI {
     # Основная форма
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "🎨 Illustraitor AI - Двойная генерация"
@@ -272,9 +277,17 @@ function Show-Message {
     $script:btnDeleteUnsplash = $btnDeleteUnsplash
     $script:btnTestUnsplash = $btnTestUnsplash
     $script:btnShowUnsplash = $btnShowUnsplash
-    $script:btnGenerateDALLE = $btnGenerateDALLE
+        $script:btnGenerateDALLE = $btnGenerateDALLE
     $script:btnSearchUnsplash = $btnSearchUnsplash
     $script:btnDownload = $btnDownload
+    $script:btnTestOpenAI = $btnTestOpenAI
+    $script:btnTestUnsplash = $btnTestUnsplash
+    $script:btnSaveOpenAI = $btnSaveOpenAI
+    $script:btnSaveUnsplash = $btnSaveUnsplash
+    $script:btnDeleteOpenAI = $btnDeleteOpenAI
+    $script:btnDeleteUnsplash = $btnDeleteUnsplash
+    $script:btnShowOpenAI = $btnShowOpenAI
+    $script:btnShowUnsplash = $btnShowUnsplash
     # --- ОБРАБОТЧИКИ СОБЫТИЙ ---
     # Кнопки показа/скрытия паролей
     $btnShowOpenAI.Add_Click({
@@ -366,6 +379,128 @@ function Show-Message {
             $script:textUnsplash.Text = ""
             Show-Message "Ключ Unsplash удален" "Success"
         }
+    # Проверка ключа OpenAI
+    $btnTestOpenAI.Add_Click({
+        $key = $script:textOpenAI.Text.Trim()
+        if (-not $key) {
+            Show-Message "Введите ключ OpenAI для проверки" "Error"
+            return
+        }
+        if (-not $key.StartsWith("sk-")) {
+            Show-Message "Ключ OpenAI должен начинаться с 'sk-'" "Error"
+            return
+        }
+        $script:btnTestOpenAI.Enabled = $false
+        $script:btnTestOpenAI.Text = "⏳ Проверка..."
+        Show-Message "Проверяем ключ OpenAI..." "Info"
+        try {
+            $body = "{""api_key"": """" + $key + """"}"
+                        $response = Invoke-RestMethod -Uri "$API_URL/validate/openai" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
+            if ($response.valid -eq $true) {
+                Show-Message "✅ Ключ OpenAI валиден!" "Success"
+            } else {
+                Show-Message "❌ Ключ OpenAI невалиден" "Error"
+            }
+        }
+        catch {
+            Show-Message "Ошибка проверки: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnTestOpenAI.Enabled = $true
+            $script:btnTestOpenAI.Text = "🔍 Проверить"
+        }
+    })
+    # Проверка ключа Unsplash
+    $btnTestUnsplash.Add_Click({
+        $key = $script:textUnsplash.Text.Trim()
+        if (-not $key) {
+            Show-Message "Введите ключ Unsplash для проверки" "Error"
+            return
+        }
+        if ($key.Length -lt 10) {
+            Show-Message "Ключ Unsplash слишком короткий" "Error"
+            return
+        }
+        $script:btnTestUnsplash.Enabled = $false
+        $script:btnTestUnsplash.Text = "⏳ Проверка..."
+        Show-Message "Проверяем ключ Unsplash..." "Info"
+        try {
+            $body = "{""api_key"": """" + $key + """"}"
+                        $response = Invoke-RestMethod -Uri "$API_URL/validate/unsplash" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
+            if ($response.valid -eq $true) {
+                Show-Message "✅ Ключ Unsplash валиден!" "Success"
+            } else {
+                Show-Message "❌ Ключ Unsplash невалиден" "Error"
+            }
+        }
+        catch {
+            Show-Message "Ошибка проверки: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnTestUnsplash.Enabled = $true
+            $script:btnTestUnsplash.Text = "🔍 Проверить"
+        }
+    })
+    # Поиск изображений в Unsplash
+    $btnSearchUnsplash.Add_Click({
+        $key = $script:textUnsplash.Text.Trim()
+        if (-not $key) {
+            Show-Message "Введите ключ Unsplash для поиска" "Error"
+            return
+        }
+        $prompt = $script:textPrompt.Text.Trim()
+        if (-not $prompt) {
+            Show-Message "Введите описание для поиска" "Error"
+            return
+        }
+        # Получаем выбранный цвет и ориентацию
+        $color = if ($script:comboColor.SelectedItem) { $script:comboColor.SelectedItem } else { "any" }
+        $orientation = if ($script:comboOrientation.SelectedItem) { 
+            switch ($script:comboOrientation.SelectedItem) {
+                "Пейзаж" { "landscape" }
+                "Портрет" { "portrait" }
+                "Квадрат" { "squarish" }
+                default { "any" }
+            }
+        } else { "any" }
+        $script:btnSearchUnsplash.Enabled = $false
+        $script:btnSearchUnsplash.Text = "⏳ Поиск..."
+        Show-Message "Ищем изображения в Unsplash..." "Info"
+        try {
+                        $body = "{"
+            $body += """prompt"": """ + $prompt + ""","
+            $body += """source"": ""unsplash"","
+            $body += """api_key"": """ + $key + ""","
+            $body += """color"": """ + $color + ""","
+            $body += """orientation"": """ + $orientation + """"
+            $body += "}"
+            $response = Invoke-RestMethod -Uri "$API_URL/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 30
+
+
+            if ($response.image_url) {
+                $global:generatedImageUrl = $response.image_url
+                $global:currentSource = "unsplash"
+                Show-Message "✅ Найдено изображение!" "Success"
+                $script:btnDownload.Enabled = $true
+                # Показываем изображение
+                if ($script:pictureBox.Image) {
+                    $script:pictureBox.Image.Dispose()
+                }
+                $imageStream = [System.Net.WebRequest]::Create($response.image_url).GetResponse().GetResponseStream()
+                $script:pictureBox.Image = [System.Drawing.Image]::FromStream($imageStream)
+                $imageStream.Close()
+            } else {
+                Show-Message "❌ Изображения не найдены" "Warning"
+            }
+        }
+        catch {
+            Show-Message "Ошибка поиска: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnSearchUnsplash.Enabled = $true
+            $script:btnSearchUnsplash.Text = "🔎 ПОИСК (Unsplash)"
+        }
+    })
     })
     # Загрузка сохраненных ключей при старте
     $savedConfig = Load-Config
@@ -379,11 +514,106 @@ function Show-Message {
     }
     return $form
 }
-# --- ЗАПУСК ---
-Write-Host "=" * 60 -ForegroundColor Cyan
-Write-Host "🎨 ILLUSTRAITOR AI - РЕАЛЬНЫЕ API" -ForegroundColor Yellow
-Write-Host "=" * 60 -ForegroundColor Cyan
-$form = Create-GUI
-[System.Windows.Forms.Application]::EnableVisualStyles()
-$form.ShowDialog()
+# --- ЗАПУСК ПРИЛОЖЕНИЯ ---
+try {
+    Write-Host "=" * 60 -ForegroundColor Cyan
+    Write-Host "ILLUSTRAITOR AI - ФИНАЛЬНАЯ ВЕРСИЯ" -ForegroundColor Yellow
+    Write-Host "API сервер: $API_URL" -ForegroundColor Green
+    Write-Host "=" * 60 -ForegroundColor Cyan
+    $form = Create-GUI
+    $form.Text = "🎨 Illustraitor AI - DALL-E 3 + Unsplash"
+    [System.Windows.Forms.Application]::EnableVisualStyles()
+    [void]$form.ShowDialog()
+}
+catch {
+    Write-Host "Ошибка: $_" -ForegroundColor Red
+}
 
+
+
+
+
+
+
+
+
+# ========== ДОБАВЛЕННЫЕ ОБРАБОТЧИКИ ==========
+
+# Обработчик для генерации DALL-E
+$btnGenerateDALLE.Add_Click({
+    $key = $script:textOpenAI.Text.Trim()
+    if (-not $key) {
+        Show-Message "Введите ключ OpenAI для генерации" "Error"
+        return
+    }
+    $prompt = $script:textPrompt.Text.Trim()
+    if (-not $prompt) {
+        Show-Message "Введите описание для генерации" "Error"
+        return
+    }
+    $script:btnGenerateDALLE.Enabled = $false
+    $script:btnGenerateDALLE.Text = "⏳ Генерация..."
+    Show-Message "Генерируем изображение DALL-E..." "Info"
+    try {
+        $body = @{
+            prompt = $prompt
+            source = "dalle"
+            api_key = $key
+        } | ConvertTo-Json
+        
+        $response = Invoke-RestMethod -Uri "$API_URL/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 60
+        
+        if ($response.image_url) {
+            $global:generatedImageUrl = $response.image_url
+            $global:currentSource = "dalle"
+            Show-Message "✅ Изображение сгенерировано!" "Success"
+            $script:btnDownload.Enabled = $true
+            # Показываем изображение
+            if ($script:pictureBox.Image) {
+                $script:pictureBox.Image.Dispose()
+            }
+            $imageStream = [System.Net.WebRequest]::Create($response.image_url).GetResponse().GetResponseStream()
+            $script:pictureBox.Image = [System.Drawing.Image]::FromStream($imageStream)
+            $imageStream.Close()
+        } else {
+            Show-Message "❌ Ошибка генерации" "Error"
+        }
+    }
+    catch {
+        Show-Message "Ошибка генерации: $($_.Exception.Message)" "Error"
+    }
+    finally {
+        $script:btnGenerateDALLE.Enabled = $true
+        $script:btnGenerateDALLE.Text = "🎨 ГЕНЕРИРОВАТЬ (DALL-E 3)"
+    }
+})
+
+# Обработчик для скачивания изображения
+$btnDownload.Add_Click({
+    if (-not $global:generatedImageUrl) {
+        Show-Message "Нет изображения для скачивания" "Warning"
+        return
+    }
+    
+    $saveDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $saveDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg|All Files|*.*"
+    $saveDialog.FileName = "generated_image.$(if ($global:currentSource -eq "dalle") {"png"} else {"jpg"})"
+    
+    if ($saveDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+        try {
+            $script:btnDownload.Enabled = $false
+            $script:btnDownload.Text = "⏳ Скачивание..."
+            
+            Invoke-WebRequest -Uri $global:generatedImageUrl -OutFile $saveDialog.FileName
+            
+            Show-Message "✅ Изображение сохранено: $($saveDialog.FileName)" "Success"
+        }
+        catch {
+            Show-Message "Ошибка скачивания: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnDownload.Enabled = $true
+            $script:btnDownload.Text = "💾 СКАЧАТЬ ИЗОБРАЖЕНИЕ"
+        }
+    }
+})

@@ -277,9 +277,17 @@ function Create-GUI {
     $script:btnDeleteUnsplash = $btnDeleteUnsplash
     $script:btnTestUnsplash = $btnTestUnsplash
     $script:btnShowUnsplash = $btnShowUnsplash
-    $script:btnGenerateDALLE = $btnGenerateDALLE
+        $script:btnGenerateDALLE = $btnGenerateDALLE
     $script:btnSearchUnsplash = $btnSearchUnsplash
     $script:btnDownload = $btnDownload
+    $script:btnTestOpenAI = $btnTestOpenAI
+    $script:btnTestUnsplash = $btnTestUnsplash
+    $script:btnSaveOpenAI = $btnSaveOpenAI
+    $script:btnSaveUnsplash = $btnSaveUnsplash
+    $script:btnDeleteOpenAI = $btnDeleteOpenAI
+    $script:btnDeleteUnsplash = $btnDeleteUnsplash
+    $script:btnShowOpenAI = $btnShowOpenAI
+    $script:btnShowUnsplash = $btnShowUnsplash
     # --- ОБРАБОТЧИКИ СОБЫТИЙ ---
     # Кнопки показа/скрытия паролей
     $btnShowOpenAI.Add_Click({
@@ -371,6 +379,128 @@ function Create-GUI {
             $script:textUnsplash.Text = ""
             Show-Message "Ключ Unsplash удален" "Success"
         }
+    # Проверка ключа OpenAI
+    $btnTestOpenAI.Add_Click({
+        $key = $script:textOpenAI.Text.Trim()
+        if (-not $key) {
+            Show-Message "Введите ключ OpenAI для проверки" "Error"
+            return
+        }
+        if (-not $key.StartsWith("sk-")) {
+            Show-Message "Ключ OpenAI должен начинаться с 'sk-'" "Error"
+            return
+        }
+        $script:btnTestOpenAI.Enabled = $false
+        $script:btnTestOpenAI.Text = "⏳ Проверка..."
+        Show-Message "Проверяем ключ OpenAI..." "Info"
+        try {
+            $body = "{""api_key"": """" + $key + """"}"
+                        $response = Invoke-RestMethod -Uri "$API_URL/validate/openai" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
+            if ($response.valid -eq $true) {
+                Show-Message "✅ Ключ OpenAI валиден!" "Success"
+            } else {
+                Show-Message "❌ Ключ OpenAI невалиден" "Error"
+            }
+        }
+        catch {
+            Show-Message "Ошибка проверки: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnTestOpenAI.Enabled = $true
+            $script:btnTestOpenAI.Text = "🔍 Проверить"
+        }
+    })
+    # Проверка ключа Unsplash
+    $btnTestUnsplash.Add_Click({
+        $key = $script:textUnsplash.Text.Trim()
+        if (-not $key) {
+            Show-Message "Введите ключ Unsplash для проверки" "Error"
+            return
+        }
+        if ($key.Length -lt 10) {
+            Show-Message "Ключ Unsplash слишком короткий" "Error"
+            return
+        }
+        $script:btnTestUnsplash.Enabled = $false
+        $script:btnTestUnsplash.Text = "⏳ Проверка..."
+        Show-Message "Проверяем ключ Unsplash..." "Info"
+        try {
+            $body = "{""api_key"": """" + $key + """"}"
+                        $response = Invoke-RestMethod -Uri "$API_URL/validate/unsplash" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10
+            if ($response.valid -eq $true) {
+                Show-Message "✅ Ключ Unsplash валиден!" "Success"
+            } else {
+                Show-Message "❌ Ключ Unsplash невалиден" "Error"
+            }
+        }
+        catch {
+            Show-Message "Ошибка проверки: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnTestUnsplash.Enabled = $true
+            $script:btnTestUnsplash.Text = "🔍 Проверить"
+        }
+    })
+    # Поиск изображений в Unsplash
+    $btnSearchUnsplash.Add_Click({
+        $key = $script:textUnsplash.Text.Trim()
+        if (-not $key) {
+            Show-Message "Введите ключ Unsplash для поиска" "Error"
+            return
+        }
+        $prompt = $script:textPrompt.Text.Trim()
+        if (-not $prompt) {
+            Show-Message "Введите описание для поиска" "Error"
+            return
+        }
+        # Получаем выбранный цвет и ориентацию
+        $color = if ($script:comboColor.SelectedItem) { $script:comboColor.SelectedItem } else { "any" }
+        $orientation = if ($script:comboOrientation.SelectedItem) { 
+            switch ($script:comboOrientation.SelectedItem) {
+                "Пейзаж" { "landscape" }
+                "Портрет" { "portrait" }
+                "Квадрат" { "squarish" }
+                default { "any" }
+            }
+        } else { "any" }
+        $script:btnSearchUnsplash.Enabled = $false
+        $script:btnSearchUnsplash.Text = "⏳ Поиск..."
+        Show-Message "Ищем изображения в Unsplash..." "Info"
+        try {
+                        $body = "{"
+            $body += """prompt"": """ + $prompt + ""","
+            $body += """source"": ""unsplash"","
+            $body += """api_key"": """ + $key + ""","
+            $body += """color"": """ + $color + ""","
+            $body += """orientation"": """ + $orientation + """"
+            $body += "}"
+            $response = Invoke-RestMethod -Uri "$API_URL/generate" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 30
+
+
+            if ($response.image_url) {
+                $global:generatedImageUrl = $response.image_url
+                $global:currentSource = "unsplash"
+                Show-Message "✅ Найдено изображение!" "Success"
+                $script:btnDownload.Enabled = $true
+                # Показываем изображение
+                if ($script:pictureBox.Image) {
+                    $script:pictureBox.Image.Dispose()
+                }
+                $imageStream = [System.Net.WebRequest]::Create($response.image_url).GetResponse().GetResponseStream()
+                $script:pictureBox.Image = [System.Drawing.Image]::FromStream($imageStream)
+                $imageStream.Close()
+            } else {
+                Show-Message "❌ Изображения не найдены" "Warning"
+            }
+        }
+        catch {
+            Show-Message "Ошибка поиска: $($_.Exception.Message)" "Error"
+        }
+        finally {
+            $script:btnSearchUnsplash.Enabled = $true
+            $script:btnSearchUnsplash.Text = "🔎 ПОИСК (Unsplash)"
+        }
+    })
     })
     # Загрузка сохраненных ключей при старте
     $savedConfig = Load-Config
@@ -398,3 +528,11 @@ try {
 catch {
     Write-Host "Ошибка: $_" -ForegroundColor Red
 }
+
+
+
+
+
+
+
+

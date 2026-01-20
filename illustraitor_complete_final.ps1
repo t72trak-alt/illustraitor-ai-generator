@@ -239,7 +239,7 @@ function Create-GUI {
             $body = @{
                 prompt = $fullPrompt
                 api_key = $apiKey
-                source = "dalle"
+                source = "openai"
                 size = "1024x1024"
             }
             try {
@@ -279,7 +279,7 @@ function Create-GUI {
                 Remove-Job -Job $job
                 if ($result.Success) {
                     $script:generatedImageUrl = $result.ImageUrl
-                    $script:currentSource = "dalle"
+                    $script:currentsource = "openai"
                     $script:btnDownload.Enabled = $true
                     $script:btnGenerateDALLE.Text = "✅ Готово!"
                     Show-Message $result.Message "Success"
@@ -392,3 +392,4 @@ try {
 catch {
     Write-Host "Ошибка: $_" -ForegroundColor Red
 }
+
